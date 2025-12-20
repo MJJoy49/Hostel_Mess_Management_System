@@ -47,7 +47,7 @@ loginForm.addEventListener("submit", function (e) {
 
     loginForm.reset();
 
-    window.location.href = "../../../Hostel_Mess_Management_System/admin/dashboard.php";
+    window.location.href = "../../main.php";
 });
 
 
@@ -102,7 +102,7 @@ createForm.addEventListener("submit", function (e) {
 
     createForm.reset();
 
-    this.onload("../../admin/dashboard.php")
+    window.location.href = "../../../Hostel_Mess_Management_System/main.php";
 
     //Next step: fetch() → PHP → MySQL
 });
