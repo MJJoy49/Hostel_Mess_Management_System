@@ -1,19 +1,13 @@
-// ডেমো ডাটা (ভবিষ্যতে ডাটাবেস থেকে আসবে)
-const demoHostelData = {
-    hostel_id: "HST-001",
-    hostel_name: "Sunrise Boys Hostel",
-    address: "123 Mirpur Road, Dhaka-1216",
-    total_seats: 120,
-    admin_id: "ADM-045"
-};
 
-// পেজ লোড হলে ডাটা দেখানো
-document.addEventListener("DOMContentLoaded", function () {
-    document.getElementById("hostel_id").textContent = demoHostelData.hostel_id;
-    document.getElementById("hostel_name").textContent = demoHostelData.hostel_name;
-    document.getElementById("address").textContent = demoHostelData.address;
-    document.getElementById("total_seats").textContent = demoHostelData.total_seats;
-    document.getElementById("admin_id").textContent = demoHostelData.admin_id;
+document.addEventListener("DOMContentLoaded", async function () {
+
+    const hostelData = await fetchHostelDataFromDB();
+
+    document.getElementById("hostel_id").textContent = hostelData.hostel_id;
+    document.getElementById("hostel_name").textContent = hostelData.hostel_name;
+    document.getElementById("address").textContent = hostelData.address;
+    document.getElementById("total_seats").textContent = hostelData.total_seats;
+    document.getElementById("admin_id").textContent = hostelData.admin_id;
 });
 
 // Edit বাটন ও মডাল কন্ট্রোল
@@ -24,11 +18,11 @@ const editForm = document.getElementById("editForm");
 
 editBtn.addEventListener("click", () => {
     // মডালে বর্তমান ভ্যালু লোড করা
-    document.getElementById("edit_hostel_id").value = demoHostelData.hostel_id;
-    document.getElementById("edit_hostel_name").value = demoHostelData.hostel_name;
-    document.getElementById("edit_address").value = demoHostelData.address;
-    document.getElementById("edit_total_seats").value = demoHostelData.total_seats;
-    document.getElementById("edit_admin_id").value = demoHostelData.admin_id;
+    // document.getElementById("edit_hostel_id").value = demoHostelData.hostel_id;
+    // document.getElementById("edit_hostel_name").value = demoHostelData.hostel_name;
+    // document.getElementById("edit_address").value = demoHostelData.address;
+    // document.getElementById("edit_total_seats").value = demoHostelData.total_seats;
+    // document.getElementById("edit_admin_id").value = demoHostelData.admin_id;
 
     modal.classList.add("active");
 });
@@ -55,12 +49,32 @@ editForm.addEventListener("submit", (e) => {
     alert("Changes saved successfully! (Frontend only)");
 });
 
-// ভবিষ্যতে ডাটাবেস থেকে ডাটা লোড করার ফাঙ্কশন (খালি রাখা)
 async function fetchHostelDataFromDB() {
-    // TODO: AJAX/Fetch দিয়ে PHP থেকে ডাটা নেওয়া হবে
-    // উদাহরণ: const response = await fetch('api/get_hostel.php');
-    // return await response.json();
+    try {
+
+        const response = await fetch('/Hostel_Mess_Management_System/api/get_hostel_info.php');
+
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const hostel_info = await response.json();
+
+        console.log(hostel_info);
+
+
+        return hostel_info;
+
+    } catch (error) {
+        console.error(error);
+    }
 }
+
+fetchHostelDataFromDB();
+
+
+
 
 // ভবিষ্যতে সেভ করার ফাঙ্কশন
 async function saveHostelDataToDB(data) {

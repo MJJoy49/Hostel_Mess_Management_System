@@ -32,12 +32,14 @@
 
 .info-box .label {
   font-size: var(--fs-sm);
+  text-align: center;
   color: var(--text-secondary);
   font-weight: 500;
 }
 
 .info-box .value {
   font-size: var(--fs-lg);
+  text-align: center;
   color: var(--text-main);
   font-weight: 600;
 }
