@@ -10,16 +10,17 @@ USE messContro;
 
 -- 1. Mess Table - All Mess Information
 CREATE TABLE Mess (
-    mess_id         VARCHAR(50) PRIMARY KEY,     -- Unique Mess ID (e.g., MESS001)
+    mess_id         VARCHAR(50) PRIMARY KEY      -- Unique Mess ID (e.g., MESS001)
     mess_name       VARCHAR(100) NOT NULL,       -- Name of the mess
     address         VARCHAR(255) NOT NULL,       -- Full address
     capacity        INT NOT NULL,                -- Total seats in mess
     admin_name      VARCHAR(100) NOT NULL,       -- Admin full name
     admin_email     VARCHAR(100) NOT NULL,       -- Admin personal email
-    admin_id        VARCHAR(50),                 -- User ID of admin (from Users table)
+    admin_id        VARCHAR(50) NOT NULL,        -- User ID of admin (from Users table)
     email_id        VARCHAR(100) UNIQUE,         -- Official mess email (optional)
     created_at      DATETIME DEFAULT CURRENT_TIMESTAMP,
-    mess_description TEXT                        -- Details about mess, facilities etc.
+    mess_description TEXT,                       -- Details about mess, facilities etc.
+    FOREIGN KEY (admin_id) REFERENCES Users(user_id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO Mess VALUES
@@ -52,18 +53,9 @@ CREATE TABLE Users (
 INSERT INTO Users VALUES
 ('USER001','Ahmed Raju','01711111111','raju@gmail.com','O+','admin',NULL,'Chittagong','Islam','Business','$2y$10$hashedpass123','MESS001',NOW(),'active'),
 ('USER002','Sohag Hossain','01722222222','sohag@bhai.com','A+','admin',NULL,'Khulna','Islam','Job','$2y$10$hashedpass123','MESS002',NOW(),'active'),
-('USER003','Md Faruk','01733333333','faruk@palace.com','B+','admin',NULL,'Dhaka','Islam','Business','$2y$10$hashedpass123','MESS003',NOW(),'active'),
-('USER004','Masud Rana','01744444444','masud@hope.com','O+','admin',NULL,'Dhaka','Islam','Job','$2y$10$hashedpass123','MESS004',NOW(),'active'),
-('USER005','Rakib Hasan','01755555555','rakib@bondhu.com','A+','admin',NULL,'Dhaka','Islam','Business','$2y$10$hashedpass123','MESS005',NOW(),'active'),
 ('USER101','Rakibul Islam','01911111111','rakib@gmail.com','AB+','member',NULL,'Sylhet','Islam','BUET Student','$2y$10$hashedpass123','MESS001',NOW(),'active'),
 ('USER102','Tanvir Ahmed','01822222222','tanvir@gmail.com','O-','member',NULL,'Cumilla','Islam','Brac Bank','$2y$10$hashedpass123','MESS001',NOW(),'active'),
 ('USER103','Arif Hossain','01833333333','arif@gmail.com','B+','member',NULL,'Rajshahi','Islam','Govt Officer','$2y$10$hashedpass123','MESS002',NOW(),'active');
-
-
--- Mess.admin_id -> Users.user_id FK (circular dependency resolve via ALTER)
-ALTER TABLE Mess
-  ADD FOREIGN KEY (admin_id) REFERENCES Users(user_id)
-  ON DELETE SET NULL;
 
 
 -- বাকি ১১টা টেবিল (আগের মতোই, কোনো চেঞ্জ নাই, শুধু ডাটাবেস নাম যোগ হয়েছে)
@@ -123,11 +115,7 @@ CREATE TABLE meal_attendances (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO meal_attendances (meal_id, user_id, attended) VALUES
-(1,'USER101',TRUE),
-(1,'USER102',TRUE),
-(2,'USER101',TRUE),
-(3,'USER101',TRUE),
-(4,'USER103',TRUE);
+(1,'USER101',TRUE),(1,'USER102',TRUE),(2,'USER101',TRUE),(3,'USER101',TRUE),(4,'USER103',TRUE);
 
 
 -- 6. monthly_bills Table

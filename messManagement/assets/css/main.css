@@ -1,0 +1,27 @@
+.app-layout {
+  display: flex;
+}
+
+.sidebar {
+  width: 220px;
+  background: #1c1917;
+  padding: 16px;
+  min-height: 100vh;
+}
+
+.sidebar a {
+  display: block;
+  color: #fafaf9;
+  text-decoration: none;
+  padding: 8px;
+  margin-bottom: 4px;
+}
+
+.sidebar a:hover {
+  background: #292524;
+}
+
+.main-content {
+  padding: 24px;
+  flex: 1;
+}

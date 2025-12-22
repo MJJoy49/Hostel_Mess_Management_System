@@ -1,23 +1,53 @@
+<!-- this is sidebar_admin.php file -->
+
 <aside class="sidebar">
+    <button class="sidebar-btn" onclick="window.location.href='main.php?page=hostel'">
+        <span class="sidebar-btn-icon">🏨</span>
+        <span class="sidebar-btn-label">Hostel</span>
+    </button>
 
-    <a href="main.php?page=hostel">Hostel</a>
+    <button class="sidebar-btn active" onclick="window.location.href='main.php?page=dashboard'">
+        <span class="sidebar-btn-icon">🏠</span>
+        <span class="sidebar-btn-label">Dashboard</span>
+    </button>
 
-    <a href="main.php?page=dashboard">Dashboard</a>
+    <button class="sidebar-btn" onclick="window.location.href='main.php?page=applications'">
+        <span class="sidebar-btn-icon">📄</span>
+        <span class="sidebar-btn-label">Applications</span>
+    </button>
 
-    <a href="main.php?page=applications">Applications</a>
+    <button class="sidebar-btn" onclick="window.location.href='main.php?page=bills'">
+        <span class="sidebar-btn-icon">🧾</span>
+        <span class="sidebar-btn-label">Bills</span>
+    </button>
 
-    <a href="main.php?page=bills">Bills</a>
+    <button class="sidebar-btn" onclick="window.location.href='main.php?page=meals'">
+        <span class="sidebar-btn-icon">🍽️</span>
+        <span class="sidebar-btn-label">Meals</span>
+    </button>
 
-    <a href="main.php?page=meals">Meals</a>
+    <button class="sidebar-btn" onclick="window.location.href='main.php?page=members'">
+        <span class="sidebar-btn-icon">👥</span>
+        <span class="sidebar-btn-label">Members</span>
+    </button>
 
-    <a href="main.php?page=members">Members</a>
+    <button class="sidebar-btn" onclick="window.location.href='main.php?page=notices'">
+        <span class="sidebar-btn-icon">📢</span>
+        <span class="sidebar-btn-label">Notices</span>
+    </button>
 
-    <a href="main.php?page=notices">Notices</a>
+    <button class="sidebar-btn" onclick="window.location.href='main.php?page=payments'">
+        <span class="sidebar-btn-icon">💳</span>
+        <span class="sidebar-btn-label">Payments</span>
+    </button>
 
-    <a href="main.php?page=payments">Payments</a>
+    <button class="sidebar-btn" onclick="window.location.href='main.php?page=rooms'">
+        <span class="sidebar-btn-icon">🛏️</span>
+        <span class="sidebar-btn-label">Rooms</span>
+    </button>
 
-    <a href="main.php?page=rooms">Rooms</a>
-
-    <a href="main.php?page=seat_ads">Seat Ads</a>
-
+    <button class="sidebar-btn" onclick="window.location.href='main.php?page=seat_ads'">
+        <span class="sidebar-btn-icon">📢</span>
+        <span class="sidebar-btn-label">Seat Ads</span>
+    </button>
 </aside>

@@ -72,7 +72,7 @@ if ($stmt->num_rows === 0) {
 $stmt->bind_result($user_id, $full_name, $hashed_password, $role, $mess_id, $status);
 $stmt->fetch();
 
-// চাইলে status চেক করতে পারো (যদি শুধু active user allow করতে চাও)
+
 if ($status !== 'active') {
     echo json_encode([
         "success" => false,
@@ -98,10 +98,11 @@ if (password_verify($password, $hashed_password)) {
         ]
     ]);
 
-    // Optional: Start session if needed
-    // session_start();
-    // $_SESSION['user_id'] = $user_id;
-    // $_SESSION['role']    = $role;
+    //Start session if needed
+    session_start();
+    $_SESSION['user_id'] = $user_id;
+    $_SESSION['role']    = $role;
+    $_SESSION['messId']= $mess_id;
 
 } else {
     // Wrong password

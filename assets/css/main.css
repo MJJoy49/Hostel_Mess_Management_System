@@ -1,27 +1,262 @@
+/* this is main.css file  */
+
+
+/* Layout container */
 .app-layout {
-  display: flex;
+  min-height: 100vh;
+  background: var(--bg-main);
 }
 
+/* Sidebar base styles */
 .sidebar {
   width: 220px;
-  background: #1c1917;
-  padding: 16px;
-  min-height: 100vh;
+  background: var(--bg-card);
+  padding: 16px 14px;
+  color: var(--text-main);
+  border-right: 1px solid var(--border);
+  box-shadow: 4px 0 18px rgba(0, 0, 0, 0.6);
 }
 
-.sidebar a {
-  display: block;
-  color: #fafaf9;
-  text-decoration: none;
-  padding: 8px;
-  margin-bottom: 4px;
+
+/* Sidebar buttons */
+.sidebar .sidebar-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,0.02),
+    rgba(0,0,0,0.15)
+  );
+
+  border: 1px solid var(--border);
+  color: var(--text-main);
+  text-align: left;
+
+  padding: 11px 14px;
+  margin-bottom: 10px;
+  border-radius: 12px;
+
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+
+  transition:
+    background 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    color 0.25s ease;
 }
 
-.sidebar a:hover {
-  background: #292524;
+/* Icon */
+.sidebar .sidebar-btn-icon {
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  opacity: 0.75;
+  transition: opacity 0.2s ease;
 }
 
-.main-content {
-  padding: 24px;
+/* Label */
+.sidebar .sidebar-btn-label {
   flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Hover */
+.sidebar .sidebar-btn:hover {
+  background: linear-gradient(
+    180deg,
+    rgba(148,163,184,0.16),
+    rgba(148,163,184,0.05)
+  );
+
+  border-color: var(--accent);
+
+  box-shadow:
+    0 0 0 1px var(--border),
+    0 8px 22px rgba(0,0,0,0.55);
+
+  color: var(--primary-hover);
+}
+
+
+
+
+/* Desktop header */
+.app-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 18px;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  z-index: 20;
+}
+
+.app-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.app-logo {
+  font-size: var(--fs-md);
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.app-header-right {
+  display: flex;
+  align-items: center;
+}
+
+.settings-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-main);
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.05s ease;
+}
+
+.settings-btn:hover {
+  background: rgba(148,163,184,0.18);
+}
+
+.settings-btn:active {
+  transform: scale(0.95);
+}
+
+/* push content under header */
+@media (min-width: 769px) {
+  .main-content {
+    padding-top: 56px;
+  }
+}
+/* ----------------------------------------- */
+
+
+/* mobile icon bar  */
+.mobile-icon-bar {
+  display: none;
+  gap: 6px;
+}
+
+.mobile-icon-bar button {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  color: var(--text-main);
+  padding: 6px 8px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.05s ease;
+}
+
+.mobile-icon-bar button:hover {
+  background: rgba(148,163,184,0.18);
+}
+
+.mobile-icon-bar button:active {
+  transform: scale(0.95);
+}
+
+/* show only on mobile */
+@media (max-width: 768px) {
+  .mobile-icon-bar {
+    display: flex;
+    align-items: center;
+  }
+}
+/* //--------------------------- */
+
+
+
+/* Mobile-first padding */
+.app-layout {
+  padding-top: 56px;
+}
+
+/* -------- Mobile behaviour (<= 768px) -------- */
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    top: 56px;
+    left: -240px;
+    bottom: 0;
+    z-index: 40;
+    padding-top: 64px;
+    transition: left 0.2s ease;
+    box-shadow: 2px 0 12px rgba(0,0,0,0.5);
+    overflow-y: auto;
+  }
+
+  body.sidebar-open .sidebar {
+    left: 0;
+  }
+
+  .app-layout::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 30;
+  }
+
+  body.sidebar-open .app-layout::before {
+    opacity: 1;
+  }
+
+  .main-content {
+    position: relative;
+    z-index: 10;
+  }
+}
+
+/* -------- Desktop / tablet (>= 769px) -------- */
+@media (min-width: 769px) {
+  .mobile-header {
+    display: none;
+  }
+
+  .app-layout {
+    display: flex;
+    padding-top: 0;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 56px;
+    left: 0;
+    bottom: 0;
+    min-height: 100vh;
+    padding-top: 16px;
+    overflow-y: auto;
+  }
+
+  .main-content {
+    flex: 1;
+    margin-left: 220px;
+  }
 }
