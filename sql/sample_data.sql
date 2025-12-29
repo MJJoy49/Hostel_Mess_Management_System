@@ -2,65 +2,84 @@
 -- Database Name: messContro
 -- Created for: Ultimate Mess Management System
 -- Total Tables: 13
--- All Demo Data Included
+-- All Demo Data Included (fixed & consistent)
 -- =============================================
 
-CREATE DATABASE IF NOT EXISTS messContro CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+DROP DATABASE IF EXISTS messContro;
+CREATE DATABASE IF NOT EXISTS messContro
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+
 USE messContro;
 
--- 1. Mess Table - All Mess Information
-CREATE TABLE Mess (
-    mess_id         VARCHAR(50) PRIMARY KEY      -- Unique Mess ID (e.g., MESS001)
-    mess_name       VARCHAR(100) NOT NULL,       -- Name of the mess
-    address         VARCHAR(255) NOT NULL,       -- Full address
-    capacity        INT NOT NULL,                -- Total seats in mess
-    admin_name      VARCHAR(100) NOT NULL,       -- Admin full name
-    admin_email     VARCHAR(100) NOT NULL,       -- Admin personal email
-    admin_id        VARCHAR(50) NOT NULL,        -- User ID of admin (from Users table)
-    email_id        VARCHAR(100) UNIQUE,         -- Official mess email (optional)
-    created_at      DATETIME DEFAULT CURRENT_TIMESTAMP,
-    mess_description TEXT,                       -- Details about mess, facilities etc.
-    FOREIGN KEY (admin_id) REFERENCES Users(user_id) ON DELETE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-INSERT INTO Mess VALUES
-('MESS001','Royal Palace Mess','House 12/A, Mirpur-10, Dhaka',24,'Ahmed Raju','raju@gmail.com','USER001','royalpalace@gmail.com',NOW(),'6-floor building with lift & rooftop garden'),
-('MESS002','Bhai Bhai Mess','55 Road-8 Block-C, Banani',16,'Sohag Hossain','sohag@bhai.com','USER002',NULL,NOW(),'Family environment, home cooked food'),
-('MESS003','Student Palace','Eskaton Garden, Ramna',30,'Md Faruk','faruk@palace.com','USER003','studentpalace@gmail.com',NOW(),'Near coaching centers'),
-('MESS004','Hope House','Sector-13, Uttara',20,'Masud Rana','masud@hope.com','USER004',NULL,NOW(),'Brand new mess, everything new'),
-('MESS005','Bondhu Mohal','Mohammadpur Bus Stand',18,'Rakib Hasan','rakib@bondhu.com','USER005','bondhumohal@gmail.com',NOW(),'All members are like friends');
-
-
--- 2. Users Table - Members + Admins
+-- =============================================
+-- 1. Users Table - Members + Admins
+--   - gender added
+--   - photo as LONGBLOB (binary image)
+-- =============================================
 CREATE TABLE Users (
-    user_id         VARCHAR(50) PRIMARY KEY,     -- Unique User ID (USER001)
+    user_id         VARCHAR(50) PRIMARY KEY,     -- Unique User ID (e.g., USER001)
     full_name       VARCHAR(100) NOT NULL,       -- Full name
+    gender          VARCHAR(10),                 -- Male/Female/Other
     contact_number  VARCHAR(20) NOT NULL,        -- Phone number
     email_id        VARCHAR(100) UNIQUE NOT NULL,-- Personal email
     blood_group     VARCHAR(10),                 -- Blood group
     role            ENUM('admin','member') NOT NULL DEFAULT 'member', -- Role
-    photo           VARCHAR(255),                -- Profile photo URL
+    photo           LONGBLOB,                    -- Profile photo BINARY
     address         VARCHAR(255),                -- Permanent address
     religion        VARCHAR(50),
     profession      VARCHAR(100),                -- Job / Student
     password        VARCHAR(255) NOT NULL,       -- Hashed password
     mess_id         VARCHAR(50),                 -- Which mess he belongs to
     created_at      DATETIME DEFAULT CURRENT_TIMESTAMP,
-    status          ENUM('active','inactive','on_leave') NOT NULL DEFAULT 'active',
-    FOREIGN KEY (mess_id) REFERENCES Mess(mess_id) ON DELETE SET NULL
+    status          ENUM('active','inactive','on_leave') NOT NULL DEFAULT 'active'
+    -- later: FK to Mess
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO Users VALUES
-('USER001','Ahmed Raju','01711111111','raju@gmail.com','O+','admin',NULL,'Chittagong','Islam','Business','$2y$10$hashedpass123','MESS001',NOW(),'active'),
-('USER002','Sohag Hossain','01722222222','sohag@bhai.com','A+','admin',NULL,'Khulna','Islam','Job','$2y$10$hashedpass123','MESS002',NOW(),'active'),
-('USER101','Rakibul Islam','01911111111','rakib@gmail.com','AB+','member',NULL,'Sylhet','Islam','BUET Student','$2y$10$hashedpass123','MESS001',NOW(),'active'),
-('USER102','Tanvir Ahmed','01822222222','tanvir@gmail.com','O-','member',NULL,'Cumilla','Islam','Brac Bank','$2y$10$hashedpass123','MESS001',NOW(),'active'),
-('USER103','Arif Hossain','01833333333','arif@gmail.com','B+','member',NULL,'Rajshahi','Islam','Govt Officer','$2y$10$hashedpass123','MESS002',NOW(),'active');
+-- Demo Users (admins + members)
+INSERT INTO Users (user_id, full_name, gender, contact_number, email_id, blood_group, role, photo, address, religion, profession, password, mess_id, created_at, status) VALUES
+('USER001','Ahmed Raju','Male','01711111111','raju@gmail.com','O+','admin',NULL,'Chittagong','Islam','Business','$2y$10$hashedpass123','MESS001',NOW(),'active'),
+('USER002','Sohag Hossain','Male','01722222222','sohag@bhai.com','A+','admin',NULL,'Khulna','Islam','Job','$2y$10$hashedpass123','MESS002',NOW(),'active'),
+('USER003','Md Faruk','Male','01733333333','faruk@palace.com','B+','admin',NULL,'Dhaka','Islam','Business','$2y$10$hashedpass123','MESS003',NOW(),'active'),
+('USER004','Masud Rana','Male','01744444444','masud@hope.com','O+','admin',NULL,'Uttara','Islam','Job','$2y$10$hashedpass123','MESS004',NOW(),'active'),
+('USER005','Rakib Hasan','Male','01755555555','rakib@bondhu.com','A+','admin',NULL,'Mohammadpur','Islam','Business','$2y$10$hashedpass123','MESS005',NOW(),'active'),
+('USER101','Rakibul Islam','Male','01911111111','rakib@gmail.com','AB+','member',NULL,'Sylhet','Islam','BUET Student','$2y$10$hashedpass123','MESS001',NOW(),'active'),
+('USER102','Tanvir Ahmed','Male','01822222222','tanvir@gmail.com','O-','member',NULL,'Cumilla','Islam','Brac Bank','$2y$10$hashedpass123','MESS001',NOW(),'active'),
+('USER103','Arif Hossain','Male','01833333333','arif@gmail.com','B+','member',NULL,'Rajshahi','Islam','Govt Officer','$2y$10$hashedpass123','MESS002',NOW(),'active');
 
+-- =============================================
+-- 2. Mess Table - All Mess Information
+--   - admin_id FK -> Users(user_id), nullable (ON DELETE SET NULL)
+-- =============================================
+CREATE TABLE Mess (
+    mess_id         VARCHAR(50) PRIMARY KEY,     -- Unique Mess ID (e.g., MESS001)
+    mess_name       VARCHAR(100) NOT NULL,       -- Name of the mess
+    address         VARCHAR(255) NOT NULL,       -- Full address
+    capacity        INT NOT NULL,                -- Total seats in mess
+    admin_name      VARCHAR(100) NOT NULL,       -- Admin full name
+    admin_email     VARCHAR(100) NOT NULL,       -- Admin personal email
+    admin_id        VARCHAR(50),                 -- User ID of admin (from Users table)
+    email_id        VARCHAR(100) UNIQUE,         -- Official mess email (optional)
+    created_at      DATETIME DEFAULT CURRENT_TIMESTAMP,
+    mess_description TEXT,                       -- Details about mess, facilities etc.
+    FOREIGN KEY (admin_id) REFERENCES Users(user_id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- বাকি ১১টা টেবিল (আগের মতোই, কোনো চেঞ্জ নাই, শুধু ডাটাবেস নাম যোগ হয়েছে)
+INSERT INTO Mess (mess_id,mess_name,address,capacity,admin_name,admin_email,admin_id,email_id,created_at,mess_description) VALUES
+('MESS001','Royal Palace Mess','House 12/A, Mirpur-10, Dhaka',24,'Ahmed Raju','raju@gmail.com','USER001','royalpalace@gmail.com',NOW(),'6-floor building with lift & rooftop garden'),
+('MESS002','Bhai Bhai Mess','55 Road-8 Block-C, Banani',16,'Sohag Hossain','sohag@bhai.com','USER002',NULL,NOW(),'Family environment, home cooked food'),
+('MESS003','Student Palace','Eskaton Garden, Ramna',30,'Md Faruk','faruk@palace.com','USER003','studentpalace@gmail.com',NOW(),'Near coaching centers'),
+('MESS004','Hope House','Sector-13, Uttara',20,'Masud Rana','masud@hope.com','USER004',NULL,NOW(),'Brand new mess, everything new'),
+('MESS005','Bondhu Mohal','Mohammadpur Bus Stand',18,'Rakib Hasan','rakib@bondhu.com','USER005','bondhumohal@gmail.com',NOW(),'All members are like friends');
 
+-- এখন Users -> Mess FK add করা হচ্ছে
+ALTER TABLE Users
+  ADD CONSTRAINT fk_users_mess
+  FOREIGN KEY (mess_id) REFERENCES Mess(mess_id) ON DELETE SET NULL;
+
+-- =============================================
 -- 3. Rooms Table
+-- =============================================
 CREATE TABLE rooms (
     room_id           INT PRIMARY KEY AUTO_INCREMENT,
     mess_id           VARCHAR(50) NOT NULL,
@@ -81,8 +100,9 @@ INSERT INTO rooms (mess_id, room_number, capacity, current_occupancy, rent_per_s
 ('MESS002','A-1',4,4,4500.00,'Full AC, Fridge, High-speed WiFi'),
 ('MESS003','501',8,7,2800.00,'Large room, Common bath, Fan');
 
-
+-- =============================================
 -- 4. Meals Table
+-- =============================================
 CREATE TABLE Meals (
     meal_id     INT PRIMARY KEY AUTO_INCREMENT,
     mess_id     VARCHAR(50) NOT NULL,
@@ -101,8 +121,9 @@ INSERT INTO Meals (mess_id, meal_date, meal_type, menu) VALUES
 ('MESS002','2025-07-10','dinner','Hilsha Fish, Rice, Dal, Potato Smash'),
 ('MESS003','2025-07-10','sehri','Dates, Roti, Chicken Curry, Yogurt');
 
-
+-- =============================================
 -- 5. meal_attendances Table
+-- =============================================
 CREATE TABLE meal_attendances (
     attendance_id   INT PRIMARY KEY AUTO_INCREMENT,
     meal_id         INT NOT NULL,
@@ -115,10 +136,16 @@ CREATE TABLE meal_attendances (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO meal_attendances (meal_id, user_id, attended) VALUES
-(1,'USER101',TRUE),(1,'USER102',TRUE),(2,'USER101',TRUE),(3,'USER101',TRUE),(4,'USER103',TRUE);
+(1,'USER101',TRUE),
+(1,'USER102',TRUE),
+(2,'USER101',TRUE),
+(3,'USER101',TRUE),
+(4,'USER103',TRUE);
 
-
+-- =============================================
 -- 6. monthly_bills Table
+-- (নাম একটু অদ্ভুত: bill_month YEAR, bill_year INT, কিন্তু তোমার demo data অনুযায়ী একই রেখেছি)
+-- =============================================
 CREATE TABLE monthly_bills (
     bill_id       INT PRIMARY KEY AUTO_INCREMENT,
     mess_id       VARCHAR(50) NOT NULL,
@@ -144,8 +171,9 @@ INSERT INTO monthly_bills (mess_id,user_id,bill_month,bill_year,total_meals,meal
 ('MESS001','USER101',2025,6,55.00,92.00,5060.00,5060.00,0.00,'paid'),
 ('MESS003','USER003',2025,7,20.00,100.00,2000.00,1000.00,1000.00,'partial');
 
-
+-- =============================================
 -- 7. payments Table
+-- =============================================
 CREATE TABLE payments (
     payment_id      INT PRIMARY KEY AUTO_INCREMENT,
     mess_id         VARCHAR(50) NOT NULL,
@@ -168,8 +196,9 @@ INSERT INTO payments (mess_id,user_id,amount,payment_for,payment_month,payment_y
 ('MESS001','USER101',4000.00,'seat_rent',2025,7,'bank','IBBL111222'),
 ('MESS003','USER003',1000.00,'meal_bill',2025,7,'bkash','BK555666');
 
-
+-- =============================================
 -- 8. meal_rates Table
+-- =============================================
 CREATE TABLE meal_rates (
     rate_id          INT PRIMARY KEY AUTO_INCREMENT,
     mess_id          VARCHAR(50) NOT NULL,
@@ -187,8 +216,9 @@ INSERT INTO meal_rates (mess_id, meal_rate, applicable_from) VALUES
 ('MESS003',100.00,'2025-07-01'),
 ('MESS001',98.00,'2025-08-01');
 
-
+-- =============================================
 -- 9. expenses Table
+-- =============================================
 CREATE TABLE expenses (
     expense_id   INT PRIMARY KEY AUTO_INCREMENT,
     mess_id      VARCHAR(50) NOT NULL,
@@ -208,8 +238,9 @@ INSERT INTO expenses (mess_id, expense_date, category, description, amount, adde
 ('MESS002','2025-07-08','Maid Salary','July Salary',8000.00,'USER002'),
 ('MESS003','2025-07-15','Manager Salary','July Salary',15000.00,'USER003');
 
-
+-- =============================================
 -- 10. daily_bazar Table
+-- =============================================
 CREATE TABLE daily_bazar (
     bazar_id     INT PRIMARY KEY AUTO_INCREMENT,
     mess_id      VARCHAR(50) NOT NULL,
@@ -228,8 +259,9 @@ INSERT INTO daily_bazar (mess_id, bazar_date, items, total_amount, bazaar_by) VA
 ('MESS003','2025-07-11','Egg 200pcs, Milk 10L, Bread',4500.00,'Faruk Sir'),
 ('MESS001','2025-07-11','Beef 8kg, Potato 20kg',16800.00,'Raju Bhai');
 
-
+-- =============================================
 -- 11. announcements Table
+-- =============================================
 CREATE TABLE announcements (
     announce_id  INT PRIMARY KEY AUTO_INCREMENT,
     mess_id      VARCHAR(50) NOT NULL,
@@ -247,8 +279,9 @@ INSERT INTO announcements (mess_id, title, message, posted_by) VALUES
 ('MESS001','Rooftop BBQ Party','Friday night BBQ on rooftop. 500 tk per person', 'USER101'),
 ('MESS003','Ramadan Schedule','Sehri: 4:30 AM, Iftar: 6:15 PM', 'USER003');
 
-
+-- =============================================
 -- 12. seat_ads Table
+-- =============================================
 CREATE TABLE seat_ads (
     ad_id           INT PRIMARY KEY AUTO_INCREMENT,
     mess_id         VARCHAR(50) NOT NULL,
@@ -273,8 +306,9 @@ INSERT INTO seat_ads (mess_id, room_id, vacant_seats, rent_per_seat, contact_per
 ('MESS001',1,1,4000.00,'Rakib','01911111111','One seat vacant from August. AC + Study table.'),
 ('MESS004',NULL,4,3500.00,'Masud','01844444444','Brand new mess. 4 seats available immediately.');
 
-
+-- =============================================
 -- 13. room_members Table
+-- =============================================
 CREATE TABLE room_members (
     id           INT PRIMARY KEY AUTO_INCREMENT,
     room_id      INT NOT NULL,
@@ -293,9 +327,8 @@ INSERT INTO room_members (room_id, user_id, joined_date, is_current) VALUES
 (3,'USER101','2025-06-01',0),
 (4,'USER002','2025-01-01',1);
 
-
 -- =============================================
 -- SUCCESS MESSAGE
 -- =============================================
-SELECT '🎉 Congratulations! Database messContro created successfully with all 13 tables & real demo data!' AS Status;
-SELECT '🚀 Your Mess Management System is now 100% READY TO LAUNCH!' AS Message;
+SELECT '🎉 Congratulations! Database messContro created successfully with all 13 tables & consistent demo data!' AS Status;
+SELECT '🚀 Your Mess Management System is now READY TO LAUNCH with gender + binary photo support!' AS Message;

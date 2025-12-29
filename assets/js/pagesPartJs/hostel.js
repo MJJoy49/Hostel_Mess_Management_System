@@ -1,51 +1,65 @@
-// Demo: change to false to see non-admin behaviour for mess fields
-const IS_ADMIN = true;
+// hostel.js – Profile (User + Mess)
+// Data আসবে api/profileInfo.php থেকে (mysqli + $mysqli based PHP)
 
-// Demo user data
-const userData = {
-    user_id: "U-2025-001",
-    full_name: "John Doe",
-    gender: "Male",
-    contact_number: "+8801712345678",
-    email_id: "john.doe@example.com",
-    blood_group: "O+",
-    role: "Student",
-    photo: "https://m.media-amazon.com/images/M/MV5BMjAwMjk3NDUzN15BMl5BanBnXkFtZTcwNjI4MTY0NA@@._V1_FMjpg_UX1000_.jpg",
-    address: "House 12, Road 5, Dhanmondi, Dhaka",
-    religion: "Islam",
-    profession: "Student",
-    joined_date: "2024-01-15"
-};
+let IS_ADMIN = false; // server থেকে role আসবে
+let userData = null;
+let messData = null;
 
-// Demo mess data
-const messData = {
-    mess_id: "M-001",
-    mess_name: "Sunrise Hostel & Mess",
-    address: "Road 10, Mirpur, Dhaka",
-    capacity: 50,
-    admin_name: "Abdullah Admin",
-    admin_email: "admin@sunrise-hostel.com",
-    admin_id: "A-1001",
-    mess_email_id: "info@sunrise-hostel.com",
-    created_at: "2020-06-01",
-    mess_description:
-        "Comfortable student mess with 24/7 water, high-speed Wi‑Fi, and hygienic meals."
-};
+// ============================
+// 1) PHP থেকে প্রোফাইল ডাটা আনা
+// ============================
+async function loadProfileData() {
+    try {
+        // main.php / index.php root ধরে নিচ্ছি:
+        // profileInfo.php রাখা আছে ./api/profileInfo.php এ
+        const response = await fetch("./api/profileInfo.php", {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        });
 
-// Utility: render profile photo with fallback initials
+        if (!response.ok) {
+            throw new Error("HTTP error " + response.status);
+        }
+
+        const data = await response.json();
+
+        if (!data.success) {
+            throw new Error(data.message || "Profile load failed");
+        }
+
+        userData = data.user;
+        messData = data.mess;
+        IS_ADMIN = !!data.is_admin;
+
+    } catch (error) {
+        console.error("Profile load error:", error);
+        alert("Could not load profile information. Please reload the page.");
+        // যাতে script পুরো বন্ধ না হয়ে যায়
+        userData = userData || {};
+        messData = messData || {};
+    }
+}
+
+// ============================
+// 2) প্রোফাইল ফটো (initials fallback)
+// ============================
 function renderProfilePhoto() {
     const img = document.getElementById("profile_photo");
     const initialsEl = document.getElementById("profile_initials");
+    if (!img || !initialsEl || !userData) return;
 
     function showInitials() {
         const name = userData.full_name || "";
-        const initials = name
-            .split(" ")
-            .filter(Boolean)
-            .map(part => part[0])
-            .join("")
-            .slice(0, 2)
-            .toUpperCase() || "U";
+        const initials =
+            name
+                .split(" ")
+                .filter(Boolean)
+                .map((part) => part[0])
+                .join("")
+                .slice(0, 2)
+                .toUpperCase() || "U";
 
         initialsEl.textContent = initials;
         initialsEl.style.display = "flex";
@@ -54,7 +68,7 @@ function renderProfilePhoto() {
 
     if (userData.photo && userData.photo.trim() !== "") {
         img.src = userData.photo;
-        img.onload = () => {
+        img.onload = function () {
             img.style.display = "block";
             initialsEl.style.display = "none";
         };
@@ -64,15 +78,35 @@ function renderProfilePhoto() {
     }
 }
 
-// Render main text fields
+// ============================
+// 3) Main Profile UI render
+// ============================
 function renderProfile() {
-    // Header
-    document.getElementById("header_full_name").textContent = userData.full_name;
-    document.getElementById("header_role").textContent = userData.role;
-    document.getElementById("header_mess_name").textContent = messData.mess_name;
-    document.getElementById("header_joined_date").textContent = userData.joined_date;
+    if (!userData || !messData) return;
 
-    // User section
+    // role label সুন্দর করে দেখানোর জন্য
+    let roleLabel = userData.role || "";
+    if (roleLabel === "admin") roleLabel = "Admin";
+    if (roleLabel === "member") roleLabel = "Member";
+
+    // Header অংশ
+    const headerName = document.getElementById("header_full_name");
+    const headerRole = document.getElementById("header_role");
+    const headerMessName = document.getElementById("header_mess_name");
+    const headerJoined = document.getElementById("header_joined_date");
+
+    if (headerName) headerName.textContent = userData.full_name || "";
+    if (headerRole) headerRole.textContent = roleLabel;
+    if (headerMessName) headerMessName.textContent = messData.mess_name || "";
+
+    // joined_date না থাকলে created_at ব্যবহার
+    let joinedDate = userData.joined_date || userData.created_at || "";
+    if (joinedDate && joinedDate.toString) {
+        joinedDate = joinedDate.toString().slice(0, 10);
+    }
+    if (headerJoined) headerJoined.textContent = joinedDate;
+
+    // ---------- User section ----------
     const userFieldIds = {
         user_id: "user_id",
         full_name: "full_name",
@@ -87,13 +121,24 @@ function renderProfile() {
         address: "user_address"
     };
 
-    Object.entries(userFieldIds).forEach(([dataKey, elementId]) => {
+    Object.entries(userFieldIds).forEach(function ([dataKey, elementId]) {
         const el = document.getElementById(elementId);
         if (!el) return;
-        el.textContent = userData[dataKey] ?? "";
+
+        let value = userData[dataKey];
+
+        if (dataKey === "role") {
+            value = roleLabel;
+        }
+
+        if (dataKey === "joined_date") {
+            value = joinedDate;
+        }
+
+        el.textContent = value ?? "";
     });
 
-    // Mess section
+    // ---------- Mess section ----------
     const messFieldIds = {
         mess_id: "mess_id",
         mess_name: "mess_name",
@@ -107,50 +152,89 @@ function renderProfile() {
         mess_description: "mess_description"
     };
 
-    Object.entries(messFieldIds).forEach(([dataKey, elementId]) => {
+    Object.entries(messFieldIds).forEach(function ([dataKey, elementId]) {
         const el = document.getElementById(elementId);
         if (!el) return;
-        el.textContent = messData[dataKey] ?? "";
+
+        let value = messData[dataKey];
+
+        if (dataKey === "created_at" && value && value.toString) {
+            value = value.toString().slice(0, 10);
+        }
+
+        el.textContent = value ?? "";
     });
 
-    // Profile photo
+    // Photo
     renderProfilePhoto();
 }
 
-// Fill modal form with current data
+// ============================
+// 4) Edit Modal form fill
+// ============================
 function fillEditForm() {
+    if (!userData || !messData) return;
+
+    const joinedDate =
+        (userData.joined_date || userData.created_at || "").toString().slice(0, 10);
+
     // Read-only user fields
-    document.getElementById("edit_user_id").value = userData.user_id;
-    document.getElementById("edit_role").value = userData.role;
-    document.getElementById("edit_joined_date").value = userData.joined_date;
+    const elUserId = document.getElementById("edit_user_id");
+    const elRole = document.getElementById("edit_role");
+    const elJoined = document.getElementById("edit_joined_date");
+
+    if (elUserId) elUserId.value = userData.user_id || "";
+    if (elRole) elRole.value = userData.role || "";
+    if (elJoined) elJoined.value = joinedDate;
 
     // Editable user fields
-    document.getElementById("edit_full_name").value = userData.full_name;
-    document.getElementById("edit_gender").value = userData.gender || "";
-    document.getElementById("edit_contact_number").value = userData.contact_number;
-    document.getElementById("edit_email_id").value = userData.email_id;
-    document.getElementById("edit_blood_group").value = userData.blood_group || "";
-    document.getElementById("edit_religion").value = userData.religion;
-    document.getElementById("edit_profession").value = userData.profession;
-    document.getElementById("edit_user_address").value = userData.address;
-    document.getElementById("edit_photo").value = userData.photo || "";
+    const userMap = {
+        edit_full_name: userData.full_name,
+        edit_gender: userData.gender || "",
+        edit_contact_number: userData.contact_number,
+        edit_email_id: userData.email_id,
+        edit_blood_group: userData.blood_group || "",
+        edit_religion: userData.religion,
+        edit_profession: userData.profession,
+        edit_user_address: userData.address,
+        edit_photo: userData.photo || ""
+    };
+
+    Object.entries(userMap).forEach(function ([id, val]) {
+        const el = document.getElementById(id);
+        if (el) el.value = val || "";
+    });
 
     // Read-only mess fields
-    document.getElementById("edit_mess_id").value = messData.mess_id;
-    document.getElementById("edit_admin_name").value = messData.admin_name;
-    document.getElementById("edit_admin_email").value = messData.admin_email;
-    document.getElementById("edit_admin_id").value = messData.admin_id;
-    document.getElementById("edit_created_at").value = messData.created_at;
+    const messReadOnly = {
+        edit_mess_id: messData.mess_id,
+        edit_admin_name: messData.admin_name,
+        edit_admin_email: messData.admin_email,
+        edit_admin_id: messData.admin_id,
+        edit_created_at: messData.created_at
+    };
+    Object.entries(messReadOnly).forEach(function ([id, val]) {
+        const el = document.getElementById(id);
+        if (el) el.value = val || "";
+    });
 
-    // Admin-only editable mess fields
-    document.getElementById("edit_mess_name").value = messData.mess_name;
-    document.getElementById("edit_capacity").value = messData.capacity;
-    document.getElementById("edit_mess_email_id").value = messData.mess_email_id;
-    document.getElementById("edit_mess_address").value = messData.address;
-    document.getElementById("edit_mess_description").value = messData.mess_description;
+    // Editable mess fields (admin only)
+    const messEditable = {
+        edit_mess_name: messData.mess_name,
+        edit_capacity: messData.capacity,
+        edit_mess_email_id: messData.mess_email_id,
+        edit_mess_address: messData.address,
+        edit_mess_description: messData.mess_description
+    };
+    Object.entries(messEditable).forEach(function ([id, val]) {
+        const el = document.getElementById(id);
+        if (el) el.value = val || "";
+    });
 }
 
-// Apply admin / non-admin permissions on fields
+// ============================
+// 5) Admin permission apply
+// ============================
 function applyAdminPermissions() {
     const adminOnlyIds = [
         "edit_mess_name",
@@ -160,35 +244,35 @@ function applyAdminPermissions() {
         "edit_mess_description"
     ];
 
-    if (!IS_ADMIN) {
-        adminOnlyIds.forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.disabled = true;
-        });
-    } else {
-        adminOnlyIds.forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.disabled = false;
-        });
-    }
+    adminOnlyIds.forEach(function (id) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.disabled = !IS_ADMIN;
+    });
 }
 
-// Open / close modal
+// ============================
+// 6) Modal control
+// ============================
 function openModal() {
     const modal = document.getElementById("editModal");
+    if (!modal) return;
     fillEditForm();
     applyAdminPermissions();
     modal.classList.add("open");
-    document.body.classList.add("modal-open"); // background scroll off
+    document.body.classList.add("modal-open");
 }
 
 function closeModal() {
     const modal = document.getElementById("editModal");
+    if (!modal) return;
     modal.classList.remove("open");
-    document.body.classList.remove("modal-open"); // background scroll on
+    document.body.classList.remove("modal-open");
 }
 
-// Initialize events
+// ============================
+// 7) Events init
+// ============================
 function initEvents() {
     const editBtn = document.getElementById("editBtn");
     const closeBtn = document.getElementById("closeModal");
@@ -196,29 +280,37 @@ function initEvents() {
     const modal = document.getElementById("editModal");
     const form = document.getElementById("editForm");
 
-    if (editBtn) editBtn.addEventListener("click", openModal);
-    if (closeBtn) closeBtn.addEventListener("click", closeModal);
-    if (cancelBtn) cancelBtn.addEventListener("click", closeModal);
+    if (editBtn) {
+        editBtn.addEventListener("click", openModal);
+    }
+    if (closeBtn) {
+        closeBtn.addEventListener("click", closeModal);
+    }
+    if (cancelBtn) {
+        cancelBtn.addEventListener("click", closeModal);
+    }
 
-    // Close when clicking outside content
     if (modal) {
-        modal.addEventListener("click", (e) => {
-            if (e.target === modal) closeModal();
+        modal.addEventListener("click", function (e) {
+            if (e.target === modal) {
+                closeModal();
+            }
         });
     }
 
-    // Save form
+    // এখন শুধু front‑end object update; পরে চাইলে DB update er জন্য আলাদা PHP বানাতে পারো
     if (form) {
-        form.addEventListener("submit", (e) => {
+        form.addEventListener("submit", function (e) {
             e.preventDefault();
+            if (!userData || !messData) return;
 
-            const getVal = (id) => {
+            function getVal(id) {
                 const el = document.getElementById(id);
                 if (!el || el.disabled) return null;
                 return el.value;
-            };
+            }
 
-            // Update user data
+            // ---- userData update ----
             const vFullName = getVal("edit_full_name");
             if (vFullName !== null) userData.full_name = vFullName.trim();
 
@@ -246,7 +338,7 @@ function initEvents() {
             const vPhoto = getVal("edit_photo");
             if (vPhoto !== null) userData.photo = vPhoto.trim();
 
-            // Update mess data (only where not disabled -> respects IS_ADMIN)
+            // ---- messData update (admin only fields) ----
             const vMessName = getVal("edit_mess_name");
             if (vMessName !== null) messData.mess_name = vMessName.trim();
 
@@ -265,16 +357,21 @@ function initEvents() {
             const vMessDesc = getVal("edit_mess_description");
             if (vMessDesc !== null) messData.mess_description = vMessDesc.trim();
 
-            // Re-render main view & close modal
+            // UI refresh + modal বন্ধ
             renderProfile();
             closeModal();
+
+            // TODO: এখানে চাইলে fetch দিয়ে profileUpdate.php তে POST করে DB update করতে পারো
         });
     }
 }
 
-// Initial setup
-document.addEventListener("DOMContentLoaded", () => {
-    renderProfile();
-    initEvents();
-    applyAdminPermissions();
+// ============================
+// 8) Entry point
+// ============================
+document.addEventListener("DOMContentLoaded", async function () {
+    await loadProfileData();   // PHP থেকে ডাটা আনা
+    renderProfile();           // UI তে বসানো
+    initEvents();              // event গুলো attach
+    applyAdminPermissions();   // admin হলে mess edit enable
 });
