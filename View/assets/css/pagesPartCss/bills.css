@@ -1,0 +1,345 @@
+/* utility */
+.hidden {
+    display: none !important;
+}
+
+.hidden-force {
+    display: none !important;
+}
+
+/* Root */
+.bills {
+    min-height: 100vh;
+    padding: 10px;
+    color: var(--text-main);
+    background-color: var(--bg-main);
+}
+
+/* Header */
+.page-title {
+    margin: 0;
+    font-size: var(--fs-2xl);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+.bills-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.bills-subtitle {
+    margin: 4px 0 0;
+    font-size: var(--fs-sm);
+    color: var(--text-secondary);
+}
+
+.bills-header-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+}
+
+.bills-filters {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+.bills-filter-label {
+    font-size: var(--fs-xs);
+    color: var(--accent);
+}
+
+.bills-filter-select {
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background-color: var(--bg-card);
+    color: var(--text-main);
+    font-size: var(--fs-xs);
+    padding: 4px 10px;
+    outline: none;
+    cursor: pointer;
+}
+
+/* Buttons */
+.btn {
+    padding: 6px 16px;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    font-size: var(--fs-sm);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition:
+        background-color 0.18s ease,
+        color 0.18s ease,
+        border-color 0.18s ease,
+        transform 0.1s ease;
+}
+
+.btn-primary {
+    background-color: var(--primary);
+    color: var(--bg-main);
+    font-weight: 500;
+}
+
+.btn-primary:hover {
+    transform: translateY(-1px);
+}
+
+.btn-secondary {
+    background-color: transparent;
+    color: var(--primary);
+    border-color: var(--border);
+}
+
+.btn-secondary:hover {
+    background-color: var(--bg-card);
+}
+
+.btn-xs {
+    padding: 3px 10px;
+    font-size: 11px;
+    border-radius: 999px;
+}
+
+/* Top stat pills */
+.bills-stat-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.stat-pill-block {
+    border-radius: 999px;
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    background-color: var(--bg-card);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.stat-pill-label {
+    font-size: var(--fs-xs);
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+}
+
+.stat-pill-value {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+/* Sections */
+.bills-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Card Block */
+.card-block {
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    background-color: var(--bg-card);
+    padding: 12px 16px 16px;
+    box-shadow: 0 0 0 1px var(--bg-main);
+}
+
+.card-block-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    gap: 8px;
+}
+
+.card-title {
+    margin: 0;
+    font-size: var(--fs-md);
+    font-weight: 500;
+}
+
+.card-meta {
+    font-size: var(--fs-xs);
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+}
+
+/* Form grid */
+.bills-form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.bills-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.bills-form-group--action {
+    align-self: flex-end;
+}
+
+.bills-form-group label {
+    font-size: var(--fs-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-secondary);
+}
+
+.bills-form-control {
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    padding: 5px 8px;
+    font-size: var(--fs-sm);
+    outline: none;
+}
+
+/* Table wrapper */
+.table-wrapper {
+    max-height: 230px;
+    overflow-y: auto;
+    overflow-x: auto;
+    border-radius: 12px;
+}
+
+.table-wrapper::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+}
+
+.table-wrapper::-webkit-scrollbar-track {
+    background: var(--bg-main);
+}
+
+.table-wrapper::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 999px;
+}
+
+/* Table */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--fs-sm);
+    min-width: 480px;
+}
+
+.table thead {
+    background-color: var(--bg-card);
+}
+
+.table th,
+.table td {
+    padding: 7px 8px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+}
+
+.table th {
+    text-align: left;
+    font-size: var(--fs-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+}
+
+.table tbody tr:nth-child(even) {
+    background-color: var(--bg-main);
+}
+
+.table tbody tr:hover {
+    background-color: var(--bg-card);
+}
+
+/* Badges */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border: 1px solid transparent;
+}
+
+/* meal / bill paid etc. */
+.badge-green {
+    background-color: var(--bg-card);
+    color: var(--success);
+    border-color: var(--success);
+}
+
+.badge-gray {
+    background-color: var(--bg-card);
+    color: var(--text-main);
+    border-color: var(--border);
+}
+
+.badge-amber {
+    background-color: var(--bg-card);
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+/* small button in table (delete icon) */
+.table-action-btn {
+    border: none;
+    background: transparent;
+    color: var(--error);
+    cursor: pointer;
+    font-size: 13px;
+    padding: 2px 4px;
+}
+
+/* Admin-only hide for member */
+.admin-only.hidden {
+    display: none !important;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .bills-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .bills-header-right {
+        align-items: flex-start;
+    }
+
+    .bills-filters {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .bills-stat-row {
+        grid-template-columns: 1fr;
+    }
+
+    .table {
+        min-width: 300px;
+        font-size: 0.8rem;
+    }
+}
