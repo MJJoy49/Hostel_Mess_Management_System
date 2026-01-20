@@ -1,0 +1,159 @@
+/* login.css */
+
+.auth-container {
+    max-width: 425px;
+    margin: auto;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding: 24px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+}
+
+.auth-switch {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+}
+
+.auth-switch button {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    background: var(--bg-main);
+    border: 1px solid var(--border);
+    color: var(--success);
+    cursor: pointer;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.auth-form h2 {
+    text-align: center;
+    font-size: var(--fs-xl);
+}
+
+.auth-form h3 {
+    font-size: var(--fs-sm);
+    color: var(--text-secondary);
+    margin-top: 12px;
+}
+
+.auth-form input,
+.auth-form textarea {
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg-main);
+    color: var(--text-main);
+}
+
+.auth-form textarea {
+    resize: none;
+    height: 70px;
+}
+
+.auth-form button {
+    margin-top: 12px;
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    background: var(--border);
+    color: var(--success);
+    cursor: pointer;
+}
+
+.hidden {
+    display: none;
+}
+
+.forgot-pass-link {
+    display: inline-block;
+    align-self: flex-end;
+    font-size: 12px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    margin-top: -6px;
+}
+
+.forgot-pass-link:hover {
+    text-decoration: underline;
+}
+
+/* ERROR MODAL */
+.error-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.error-modal-content {
+    background: var(--bg-card);
+    padding: 24px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    position: relative;
+}
+
+.error-modal-content p {
+    margin: 0;
+    font-size: 14px;
+    color: var(--text-main);
+}
+
+.error-close {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--text-secondary);
+}
+
+.error-close:hover {
+    color: var(--text-main);
+}
+
+.gender-container {
+    margin: 12px 0;
+}
+
+.gender-container label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: var(--fs-sm);
+    color: var(--text-secondary);
+}
+
+.radio-group {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.radio-group label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    color: var(--text-main);
+    cursor: pointer;
+    margin-bottom: 0;
+}
+
+.radio-group input[type="radio"] {
+    accent-color: var(--success);
+}
