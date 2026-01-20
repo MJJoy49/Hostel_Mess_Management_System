@@ -1,0 +1,354 @@
+-- =============================================
+-- Database Name: messContro
+-- Created for: Ultimate Mess Management System
+-- Total Tables: 13
+-- All Demo Data Included (fixed & consistent)
+-- =============================================
+
+DROP DATABASE IF EXISTS messContro;
+CREATE DATABASE IF NOT EXISTS messContro
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+
+USE messContro;
+
+-- =============================================
+-- 1. Users Table - Members + Admins
+--   - gender added
+--   - photo as LONGBLOB (binary image)
+-- =============================================
+CREATE TABLE Users (
+    user_id         VARCHAR(50) PRIMARY KEY,     -- Unique User ID (e.g., USER001)
+    full_name       VARCHAR(100) NOT NULL,       -- Full name
+    gender          VARCHAR(10),                 -- Male/Female/Other
+    contact_number  VARCHAR(20) NOT NULL,        -- Phone number
+    email_id        VARCHAR(100) UNIQUE NOT NULL,-- Personal email
+    blood_group     VARCHAR(10),                 -- Blood group
+    role            ENUM('admin','member') NOT NULL DEFAULT 'member', -- Role
+    photo           LONGBLOB,                    -- Profile photo BINARY
+    address         VARCHAR(255),                -- Permanent address
+    religion        VARCHAR(50),
+    profession      VARCHAR(100),                -- Job / Student
+    password        VARCHAR(255) NOT NULL,       -- Hashed password
+    mess_id         VARCHAR(50),                 -- Which mess he belongs to
+    created_at      DATETIME DEFAULT CURRENT_TIMESTAMP,
+    status          ENUM('active','inactive','on_leave') NOT NULL DEFAULT 'active'
+    -- later: FK to Mess
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+-- =============================================
+-- 2. Mess Table - All Mess Information
+--   - admin_id FK -> Users(user_id), nullable (ON DELETE SET NULL)
+-- =============================================
+CREATE TABLE Mess (
+    mess_id         VARCHAR(50) PRIMARY KEY,     -- Unique Mess ID (e.g., MESS001)
+    mess_name       VARCHAR(100) NOT NULL,       -- Name of the mess
+    address         VARCHAR(255) NOT NULL,       -- Full address
+    capacity        INT NOT NULL,                -- Total seats in mess
+    admin_name      VARCHAR(100) NOT NULL,       -- Admin full name
+    admin_email     VARCHAR(100) NOT NULL,       -- Admin personal email
+    admin_id        VARCHAR(50),                 -- User ID of admin (from Users table)
+    email_id        VARCHAR(100) UNIQUE,         -- Official mess email (optional)
+    created_at      DATETIME DEFAULT CURRENT_TIMESTAMP,
+    mess_description TEXT,                       -- Details about mess, facilities etc.
+    FOREIGN KEY (admin_id) REFERENCES Users(user_id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+-- এখন Users -> Mess FK add করা হচ্ছে
+ALTER TABLE Users
+  ADD CONSTRAINT fk_users_mess
+  FOREIGN KEY (mess_id) REFERENCES Mess(mess_id) ON DELETE SET NULL;
+
+-- =============================================
+-- 3. Rooms Table
+-- =============================================
+CREATE TABLE rooms (
+    room_id           INT PRIMARY KEY AUTO_INCREMENT,
+    mess_id           VARCHAR(50) NOT NULL,
+    room_number       VARCHAR(20) NOT NULL,
+    capacity          INT NOT NULL DEFAULT 4,
+    current_occupancy INT NOT NULL DEFAULT 0,
+    rent_per_seat     DECIMAL(8,2) DEFAULT 3500.00,
+    facilities        TEXT,
+    is_active         TINYINT(1) DEFAULT 1,
+    UNIQUE KEY uniq_room (mess_id, room_number),
+    FOREIGN KEY (mess_id) REFERENCES Mess(mess_id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+-- =============================================
+-- 4. Meals Table
+-- =============================================
+CREATE TABLE Meals (
+    meal_id     INT PRIMARY KEY AUTO_INCREMENT,
+    mess_id     VARCHAR(50) NOT NULL,
+    meal_date   DATE NOT NULL,
+    meal_type   VARCHAR(30) NOT NULL,
+    menu        TEXT,
+    created_at  DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY unique_meal_per_day_type (mess_id, meal_date, meal_type),
+    FOREIGN KEY (mess_id) REFERENCES Mess(mess_id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+-- =============================================
+-- 5. meal_attendances Table
+-- =============================================
+CREATE TABLE meal_attendances (
+    attendance_id   INT PRIMARY KEY AUTO_INCREMENT,
+    meal_id         INT NOT NULL,
+    user_id         VARCHAR(50) NOT NULL,
+    attended        BOOLEAN NOT NULL DEFAULT FALSE,
+    attended_at     DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY unique_attendance_per_user_meal (meal_id, user_id),
+    FOREIGN KEY (meal_id) REFERENCES Meals(meal_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+-- =============================================
+-- 6. monthly_bills Table
+-- =============================================
+CREATE TABLE monthly_bills (
+    bill_id       INT PRIMARY KEY AUTO_INCREMENT,
+    mess_id       VARCHAR(50) NOT NULL,
+    user_id       VARCHAR(50) NOT NULL,
+    bill_month    YEAR NOT NULL,
+    bill_year     INT NOT NULL,
+    total_meals   DECIMAL(5,2) DEFAULT 0.00,
+    meal_rate     DECIMAL(6,2) NOT NULL DEFAULT 95.00,
+    total_amount  DECIMAL(8,2) NOT NULL DEFAULT 0.00,
+    paid_amount   DECIMAL(8,2) DEFAULT 0.00,
+    due_amount    DECIMAL(8,2) DEFAULT 0.00,
+    status        ENUM('pending','paid','partial') DEFAULT 'pending',
+    generated_at  DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uniq_user_month (mess_id, user_id, bill_month, bill_year),
+    FOREIGN KEY (mess_id) REFERENCES Mess(mess_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+-- =============================================
+-- 7. payments Table
+-- =============================================
+CREATE TABLE payments (
+    payment_id      INT PRIMARY KEY AUTO_INCREMENT,
+    mess_id         VARCHAR(50) NOT NULL,
+    user_id         VARCHAR(50) NOT NULL,
+    amount          DECIMAL(8,2) NOT NULL,
+    payment_for     ENUM('meal_bill','seat_rent','both') DEFAULT 'meal_bill',
+    payment_month   YEAR NOT NULL,
+    payment_year    INT NOT NULL,
+    payment_method  ENUM('cash','bkash','nagad','bank') NOT NULL,
+    transaction_id  VARCHAR(100),
+    paid_at         DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (mess_id) REFERENCES Mess(mess_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+-- =============================================
+-- 8. meal_rates Table
+-- =============================================
+CREATE TABLE meal_rates (
+    rate_id          INT PRIMARY KEY AUTO_INCREMENT,
+    mess_id          VARCHAR(50) NOT NULL,
+    meal_rate        DECIMAL(6,2) NOT NULL,
+    applicable_from  DATE NOT NULL,
+    created_at       DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uniq_rate_period (mess_id, applicable_from),
+    FOREIGN KEY (mess_id) REFERENCES Mess(mess_id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+-- =============================================
+-- 9. expenses Table
+-- =============================================
+CREATE TABLE expenses (
+    expense_id   INT PRIMARY KEY AUTO_INCREMENT,
+    mess_id      VARCHAR(50) NOT NULL,
+    expense_date DATE NOT NULL,
+    category     VARCHAR(50) NOT NULL,
+    description  TEXT,
+    amount       DECIMAL(8,2) NOT NULL,
+    added_by     VARCHAR(50),
+    created_at   DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (mess_id) REFERENCES Mess(mess_id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+-- =============================================
+-- 10. daily_bazar Table
+-- =============================================
+CREATE TABLE daily_bazar (
+    bazar_id     INT PRIMARY KEY AUTO_INCREMENT,
+    mess_id      VARCHAR(50) NOT NULL,
+    bazar_date   DATE NOT NULL,
+    items        TEXT NOT NULL,
+    total_amount DECIMAL(8,2) NOT NULL,
+    bazaar_by    VARCHAR(100),
+    created_at   DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (mess_id) REFERENCES Mess(mess_id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+-- =============================================
+-- 11. announcements Table
+-- =============================================
+CREATE TABLE announcements (
+    announce_id  INT PRIMARY KEY AUTO_INCREMENT,
+    mess_id      VARCHAR(50) NOT NULL,
+    title        VARCHAR(200) NOT NULL,
+    message      TEXT NOT NULL,
+    posted_by    VARCHAR(50),
+    created_at   DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (mess_id) REFERENCES Mess(mess_id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+-- =============================================
+-- 12. seat_ads Table
+-- =============================================
+CREATE TABLE seat_ads (
+    ad_id           INT PRIMARY KEY AUTO_INCREMENT,
+    mess_id         VARCHAR(50) NOT NULL,
+    room_id         INT DEFAULT NULL,
+    vacant_seats    INT NOT NULL DEFAULT 1,
+    rent_per_seat   DECIMAL(8,2) NOT NULL,
+    contact_person  VARCHAR(100) NOT NULL,
+    contact_number  VARCHAR(20) NOT NULL,
+    ad_title        VARCHAR(200) DEFAULT 'Seat Available - Contact Now',
+    mess_address VARCHAR(255) NOT NULL,
+    ad_description  TEXT,
+    is_active       TINYINT(1) DEFAULT 1,
+    posted_at       DATETIME DEFAULT CURRENT_TIMESTAMP,
+    expires_at      DATE DEFAULT (DATE_ADD(CURRENT_DATE, INTERVAL 30 DAY)),
+    FOREIGN KEY (mess_id) REFERENCES Mess(mess_id) ON DELETE CASCADE,
+    FOREIGN KEY (room_id) REFERENCES rooms(room_id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+-- =============================================
+-- 13. room_members Table
+-- =============================================
+CREATE TABLE room_members (
+    id           INT PRIMARY KEY AUTO_INCREMENT,
+    room_id      INT NOT NULL,
+    user_id      VARCHAR(50) NOT NULL,
+    joined_date  DATE NOT NULL,
+    is_current   TINYINT(1) DEFAULT 1,
+    UNIQUE KEY uniq_current_member (room_id, user_id),
+    FOREIGN KEY (room_id) REFERENCES rooms(room_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+-- =============================================
+-- 14. request_seat Table
+-- =============================================
+
+CREATE TABLE request_seat (
+    request_id      INT PRIMARY KEY AUTO_INCREMENT,  
+    ad_id           INT NOT NULL,                    
+    name            VARCHAR(100) NOT NULL,           
+    contact_number  VARCHAR(20) NOT NULL,            
+    profession      VARCHAR(100),                    
+    description     TEXT,                            
+    request_date    DATETIME DEFAULT CURRENT_TIMESTAMP, 
+    status          ENUM('pending','accepted') NOT NULL DEFAULT 'pending',
+    FOREIGN KEY (ad_id) REFERENCES seat_ads(ad_id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- =============================================
+-- SUCCESS MESSAGE
+-- =============================================
+SELECT '🎉 Congratulations! Database messContro created successfully with all 13 tables & consistent demo data!' AS Status;
+SELECT '🚀 Your Mess Management System is now READY TO LAUNCH with gender + binary photo support!' AS Message;
+
+
+
+
+
+-----------------------------------------
+
+HOSTEL_MESS_MANAGEMENT_SYSTEM/
+│
+├── Model/
+│   ├── config/
+│   │   ├── config.php
+│   │   └── database.php
+│   └── helper/
+│       ├── IdGenerator.php
+│
+├── View/
+│   ├── pages/
+│   │   ├── bills.php
+│   │   ├── dashboard.php
+│   │   ├── meals.php
+│   │   ├── members.php
+│   │   ├── notices.php
+│   │   ├── payments.php
+│   │   ├── profile.php
+│   │   ├── rooms.php
+│   ├── visitor/
+│   │   ├── apply.php
+│   │   └── seat_ads.php
+│   ├── includes/
+│   │   ├── auth_check.php
+│   │   ├── sidebar_admin.php
+│   ├── assets/
+│   │   ├── css/
+│   │   │   ├── login.css
+│   │   │   ├── main.css
+│   │   │   ├── style.css
+│   │   │   ├── landing.css
+│   │   │   └── pagesPartCss/
+│   │   │       ├── bills.css
+│   │   │       ├── dashboard.css
+│   │   │       ├── meals.css
+│   │   │       ├── members.css
+│   │   │       ├── notices.css
+│   │   │       ├── payments.css
+│   │   │       ├── profile.css
+│   │   │       ├── rooms.css
+│   │   │       └── seat_ads.css
+│   │   └── js/
+│   │       ├── auth.js
+│   │       ├── login.js
+│   │       ├── main.js
+│   │       ├── member.js 
+│   │       ├── landing.js
+│   │       ├── toggleTheme.js
+│   │       └── pagesPartJs/
+│   │           ├── applications.js
+│   │           ├── bills.js
+│   │           ├── dashboard.js
+│   │           ├── meals.js
+│   │           ├── members.js
+│   │           ├── notices.js
+│   │           ├── payments.js
+│   │           ├── profile.js
+│   │           ├── rooms.js
+│   │           └── seat_ads.js
+│   ├── main.php
+│   ├── index1.php
+│   └── login.php
+│
+└── Controller/
+    ├── pages/
+    │   ├── BillsController.php
+    │   ├── DashboardController.php
+    │   ├── MealsController.php
+    │   ├── MembersController.php
+    │   ├── NoticesController.php
+    │   ├── PaymentsController.php
+    │   ├── ProfileController.php
+    │   ├── RoomsController.php
+    ├── visitor/
+    │   ├── ApplyController.php
+    │   └── SeatAdsController.php
+    ├── AuthController.php
+    ├── MainController.php
+    └── logout.php
