@@ -1,0 +1,315 @@
+/* Extra styles for landing (index1.php) */
+
+.landing-hero {
+  max-width: 1200px;
+  margin: 32px auto 24px;
+  padding: 0 24px;
+}
+
+/* Hero left only */
+.hero-left {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.hero-title {
+  font-size: var(--fs-2xl);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.hero-subtitle {
+  font-size: var(--fs-md);
+  color: var(--text-secondary);
+  max-width: 520px;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.hero-btn {
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-size: var(--fs-sm);
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition:
+    background-color 0.18s ease,
+    color 0.18s ease,
+    border-color 0.18s ease,
+    transform 0.06s ease;
+}
+
+.hero-btn-primary {
+  background-color: var(--primary);
+  color: var(--bg-main);
+  font-weight: 600;
+}
+
+.hero-btn-primary:hover {
+  background-color: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+.hero-btn-secondary {
+  background-color: transparent;
+  color: var(--primary);
+  border-color: var(--border);
+}
+
+.hero-btn-secondary:hover {
+  background-color: var(--bg-card);
+}
+
+.hero-bullets {
+  list-style: disc;
+  padding-left: 20px;
+  margin-top: 8px;
+  color: var(--text-secondary);
+  font-size: var(--fs-sm);
+}
+
+/* Generic landing section */
+.landing-section {
+  max-width: 1200px;
+  margin: 16px auto 24px;
+  padding: 0 24px;
+}
+
+.section-title {
+  font-size: var(--fs-xl);
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.section-subtitle {
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+
+/* How-it-works grid */
+.how-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.how-card {
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  padding: 12px 14px;
+  background-color: var(--bg-card);
+  box-shadow: 0 8px 24px var(--bg-main);
+  font-size: var(--fs-sm);
+}
+
+.how-card h3 {
+  margin: 0 0 6px;
+  font-size: var(--fs-md);
+}
+
+.how-card ul {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--text-secondary);
+}
+
+/* Seat ads section header row */
+.section-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.ads-search-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.ads-search-input {
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background-color: var(--bg-card);
+  color: var(--text-main);
+  padding: 6px 12px;
+  font-size: var(--fs-sm);
+  outline: none;
+  min-width: 220px;
+}
+
+/* Column of ads (one card per row) */
+.ads-column {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  /* approx 5 cards height; more than that -> scroll */
+  max-height: 800px;
+  overflow-y: auto;
+}
+
+/* Scrollbar colors from variables */
+.ads-column::-webkit-scrollbar {
+  width: 6px;
+}
+.ads-column::-webkit-scrollbar-track {
+  background: var(--bg-main);
+}
+.ads-column::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 999px;
+}
+
+/* Each ad card in column */
+.ad-card {
+  width: 100%;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  padding: 14px 14px 12px;
+  background-color: var(--bg-card);
+  box-shadow: 0 0 0 1px var(--bg-main);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ad-title {
+  margin: 0;
+  font-size: var(--fs-md);
+  font-weight: 500;
+}
+
+.ad-mess-name {
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--accent);
+}
+
+.ad-address {
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+}
+
+.ad-meta-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.ad-meta-block {
+  flex: 1;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background-color: var(--bg-main);
+  padding: 6px 8px;
+}
+
+.ad-meta-label {
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+}
+
+.ad-meta-value {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+
+.ad-description {
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.ad-footer-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: var(--fs-xs);
+  color: var(--text-secondary);
+}
+
+.ad-contact {
+  max-width: 55%;
+}
+
+.ad-dates {
+  text-align: right;
+}
+
+.ad-date-line {
+  display: block;
+}
+
+/* apply button inside ad */
+.ad-apply-btn {
+  margin-top: 8px;
+  align-self: flex-start;
+}
+
+/* No ads card */
+.no-ads-card {
+  border-radius: 16px;
+  border: 1px dashed var(--border);
+  padding: 16px 14px;
+  background-color: var(--bg-card);
+  color: var(--text-secondary);
+}
+
+/* Footer info section */
+.landing-footer-info {
+  margin-bottom: 40px;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.footer-step {
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  padding: 10px 12px;
+  background-color: var(--bg-card);
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+}
+
+.footer-step h3 {
+  margin: 0 0 6px;
+  font-size: var(--fs-md);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .landing-hero,
+  .landing-section {
+    padding: 0 16px;
+  }
+
+  .section-header-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .ads-search-input {
+    min-width: 0;
+    width: 100%;
+  }
+}
