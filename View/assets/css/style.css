@@ -1,0 +1,195 @@
+/* style.css */
+
+:root {
+  /* Backgrounds */
+  --bg-main: #0C0A09;     /* stone-950 */
+  --bg-card: #1C1917;     /* stone-900 */
+
+  /* Primary */
+  --primary: #A8A29E;     /* stone-400 */
+  --primary-hover: #D6D3D1;
+
+  /* Text */
+  --text-main: #FAFAF9;   /* stone-50 */
+  --text-secondary: #D6D3D1;
+
+  /* Border */
+  --border: #292524;      /* stone-800 */
+
+  /* Accent */
+  --accent: #78716C;      /* stone-500 */
+
+  /* Status */
+  --success: #22C55E;
+  --error: #F87171;
+}
+
+/* Light theme override */
+
+[data-theme="light"] {
+  /* Backgrounds */
+  --bg-main: #FAFAF9;      /* stone-50 */
+  --bg-card: #FFFFFF;
+
+  /* Primary */
+  --primary: #78716C;     /* stone-500 */
+  --primary-hover: #57534E;
+
+  /* Text */
+  --text-main: #1C1917;   /* stone-900 */
+  --text-secondary: #57534E;
+
+  /* Border */
+  --border: #E7E5E4;      /* stone-200 */
+
+  /* Accent */
+  --accent: #A8A29E;      /* stone-400 */
+
+  /* Status */
+  --success: #22C55E;
+  --error: #DC2626;
+}
+
+/* Font sizes */
+
+:root {
+  --fs-xs: 12px;   /* small labels */
+  --fs-sm: 14px;   /* helper text */
+  --fs-md: 16px;   /* normal text */
+  --fs-lg: 18px;   /* section text */
+  --fs-xl: 24px;   /* headings */
+  --fs-2xl: 32px;  /* page title */
+}
+
+/* ===================== GLOBAL ===================== */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--bg-main);
+  color: var(--text-main);
+  font-family: Inter, system-ui, sans-serif;
+  font-size: var(--fs-md);
+  line-height: 1.6;
+}
+
+/* ===================== HEADER ===================== */
+
+.header {
+  height: 64px;
+  padding: 0 24px;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  font-size: var(--fs-lg);
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+/* Right side buttons */
+.header-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+/* ===================== BUTTONS ===================== */
+
+.login-btn {
+  padding: 8px 16px;
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+  background: var(--bg-main);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  text-decoration: none;
+  transition: 0.2s ease;
+}
+
+.login-btn:hover {
+  border: 1px solid var(--border);
+}
+
+.mode-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: var(--bg-main);
+  border: 1px solid var(--border);
+  color: var(--text-main);
+  cursor: pointer;
+}
+
+/* ===================== MAIN ===================== */
+
+.main {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 0 24px;
+}
+
+.main h1 {
+  font-size: var(--fs-2xl);
+  margin-bottom: 16px;
+}
+
+.main p {
+  font-size: var(--fs-md);
+  color: var(--text-secondary);
+}
+
+/* ===================== CARD ===================== */
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  margin-top: 24px;
+}
+
+/* ===================== FOOTER ===================== */
+
+.footer {
+  margin-top: 64px;
+  padding: 24px;
+  text-align: center;
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+  border-top: 1px solid var(--border);
+}
+
+/* ===================== LINKS ===================== */
+
+a {
+  color: var(--primary);
+}
+
+a:hover {
+  color: var(--primary-hover);
+}
+
+/* ===================== RESPONSIVE ===================== */
+
+@media (max-width: 768px) {
+  .logo {
+    font-size: var(--fs-md);
+  }
+
+  .header {
+    padding: 0 16px;
+  }
+
+  .main {
+    margin: 24px auto;
+  }
+}
