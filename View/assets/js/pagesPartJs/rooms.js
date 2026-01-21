@@ -30,7 +30,6 @@ document.addEventListener('DOMContentLoaded', function () {
     var addRoomClose = document.getElementById('addRoomClose');
     var addRoomCancel = document.getElementById('addRoomCancel');
     var addRoomForm = document.getElementById('addRoomForm');
-    var roomModalSaveBtn = document.getElementById('roomModalSaveBtn');
 
     var newRoomNumber = document.getElementById('new_room_number');
     var newCapacity = document.getElementById('new_capacity');
@@ -64,7 +63,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function loadRoomsData() {
-        getJSON('../controller/pages/RoomsController.php?action=getData', function (err, data) {
+        getJSON('../Controller/pages/RoomsController.php?action=getData', function (err, data) {
             if (err || !data.success) {
                 console.error('Failed to load rooms', err || data);
                 return;
@@ -139,7 +138,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function loadRoomDetails(roomId) {
-        var url = '../controller/pages/RoomsController.php?action=getRoom&room_id=' + encodeURIComponent(roomId);
+        var url = '../Controller/pages/RoomsController.php?action=getRoom&room_id=' +
+            encodeURIComponent(roomId);
         getJSON(url, function (err, data) {
             if (err || !data.success) {
                 console.error('Failed to load room details', err || data);
@@ -216,6 +216,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function openAddRoomModal() {
+        if (currentUserRole !== 'admin') return;
+
         editMode = false;
         selectedRoomId = null;
         currentRoom = null;
@@ -226,6 +228,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function openEditRoomModal() {
+        if (currentUserRole !== 'admin') return;
+
         if (!selectedRoomId || !currentRoom) {
             alert('Please select a room first.');
             return;
@@ -249,89 +253,96 @@ document.addEventListener('DOMContentLoaded', function () {
         editMode = false;
     }
 
-    addRoomBtn.addEventListener('click', openAddRoomModal);
-    addRoomClose.addEventListener('click', closeRoomModal);
-    addRoomCancel.addEventListener('click', closeRoomModal);
+    if (addRoomBtn) addRoomBtn.addEventListener('click', openAddRoomModal);
+    if (addRoomClose) addRoomClose.addEventListener('click', closeRoomModal);
+    if (addRoomCancel) addRoomCancel.addEventListener('click', closeRoomModal);
 
-    addRoomForm.addEventListener('submit', function (e) {
-        e.preventDefault();
+    if (addRoomForm) {
+        addRoomForm.addEventListener('submit', function (e) {
+            e.preventDefault();
 
-        var roomNumber = newRoomNumber.value.trim();
-        var capacity = parseInt(newCapacity.value, 10) || 0;
-        var rent = parseFloat(newRent.value) || 0;
-        var isActive = parseInt(newIsActive.value, 10) || 0;
-        var facilities = newFacilities.value.trim();
+            var roomNumber = newRoomNumber.value.trim();
+            var capacity = parseInt(newCapacity.value, 10) || 0;
+            var rent = parseFloat(newRent.value) || 0;
+            var isActive = parseInt(newIsActive.value, 10) || 0;
+            var facilities = newFacilities.value.trim();
 
-        if (!roomNumber || capacity <= 0) {
-            alert('Please fill room number and capacity.');
-            return;
-        }
+            if (!roomNumber || capacity <= 0) {
+                alert('Please fill room number and capacity.');
+                return;
+            }
 
-        var fd = new FormData();
-        fd.append('new_room_number', roomNumber);
-        fd.append('new_capacity', capacity);
-        fd.append('new_rent', rent);
-        fd.append('new_is_active', isActive);
-        fd.append('new_facilities', facilities);
+            var fd = new FormData();
+            fd.append('new_room_number', roomNumber);
+            fd.append('new_capacity', capacity);
+            fd.append('new_rent', rent);
+            fd.append('new_is_active', isActive);
+            fd.append('new_facilities', facilities);
 
-        var url;
-        if (editMode && currentRoom && selectedRoomId) {
-            url = '../controller/pages/RoomsController.php?action=updateRoom';
+            var url;
+            if (editMode && currentRoom && selectedRoomId) {
+                url = '../Controller/pages/RoomsController.php?action=updateRoom';
+                fd.append('room_id', selectedRoomId);
+            } else {
+                url = '../Controller/pages/RoomsController.php?action=addRoom';
+            }
+
+            postJSON(url, fd, function (err, data) {
+                if (err || !data || !data.success) {
+                    alert((data && data.message) || 'Failed to save room');
+                    return;
+                }
+                alert(data.message || 'Saved.');
+                closeRoomModal();
+                loadRoomsData();
+            });
+        });
+    }
+
+    if (editRoomBtn) {
+        editRoomBtn.addEventListener('click', openEditRoomModal);
+    }
+
+    if (removeRoomBtn) {
+        removeRoomBtn.addEventListener('click', function () {
+            if (currentUserRole !== 'admin') return;
+
+            if (!selectedRoomId) {
+                alert('Please select a room first.');
+                return;
+            }
+
+            if (!confirm('Are you sure you want to remove/close this room?')) {
+                return;
+            }
+
+            var fd = new FormData();
             fd.append('room_id', selectedRoomId);
-        } else {
-            url = '../controller/pages/RoomsController.php?action=addRoom';
-        }
 
-        postJSON(url, fd, function (err, data) {
-            if (err || !data.success) {
-                alert((data && data.message) || 'Failed to save room');
-                return;
-            }
-            alert(data.message || 'Saved.');
-            closeRoomModal();
-            loadRoomsData();
+            postJSON('../Controller/pages/RoomsController.php?action=removeRoom', fd, function (err, data) {
+                if (err || !data || !data.success) {
+                    alert((data && data.message) || 'Failed to remove room');
+                    return;
+                }
+                alert(data.message || 'Room removed.');
+
+                selectedRoomId = null;
+                currentRoom = null;
+                detailRoomMeta.textContent = 'No room selected';
+                detailRoomNumber.textContent = '-';
+                detailCapacity.textContent = '-';
+                detailOccupancy.textContent = '-';
+                detailVacant.textContent = '-';
+                detailRent.textContent = '-';
+                detailStatus.textContent = '-';
+                detailMembers.textContent = '-';
+                detailFacilities.textContent = '-';
+                roomNotesList.innerHTML = '';
+
+                loadRoomsData();
+            });
         });
-    });
-
-    editRoomBtn.addEventListener('click', function () {
-        openEditRoomModal();
-    });
-
-    removeRoomBtn.addEventListener('click', function () {
-        if (!selectedRoomId) {
-            alert('Please select a room first.');
-            return;
-        }
-
-        if (!confirm('Are you sure you want to remove/close this room?')) {
-            return;
-        }
-
-        var fd = new FormData();
-        fd.append('room_id', selectedRoomId);
-
-        postJSON('../controller/pages/RoomsController.php?action=removeRoom', fd, function (err, data) {
-            if (err || !data.success) {
-                alert((data && data.message) || 'Failed to remove room');
-                return;
-            }
-            alert(data.message || 'Room removed.');
-            selectedRoomId = null;
-            currentRoom = null;
-            roomDetailsMeta.textContent = 'No room selected';
-            detailRoomNumber.textContent = '-';
-            detailCapacity.textContent = '-';
-            detailOccupancy.textContent = '-';
-            detailVacant.textContent = '-';
-            detailRent.textContent = '-';
-            detailStatus.textContent = '-';
-            detailMembers.textContent = '-';
-            detailFacilities.textContent = '-';
-            roomNotesList.innerHTML = '';
-
-            loadRoomsData();
-        });
-    });
+    }
 
     loadRoomsData();
 });
